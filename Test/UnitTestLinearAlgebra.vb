@@ -1,7 +1,6 @@
 ﻿Imports System.Text
 Imports Microsoft.VisualStudio.TestTools.UnitTesting
 Imports SimpleLinearAlgebra
-Imports SimpleLinearAlgebra.Math
 
 <TestClass()> Public Class UnitTestLinearAlgebra
     ''' <summary>
@@ -431,7 +430,7 @@ Imports SimpleLinearAlgebra.Math
             End If
 
             'swap col -> sign *-1
-            Utility.MathUtil.SwapCol(detMat, 0, 1)
+            MathUtil.SwapCol(detMat, 0, 1)
             detMat.PrintValue()
             d = detMat.Det()
             Console.WriteLine("Determinant:{0}", d)
@@ -453,7 +452,7 @@ Imports SimpleLinearAlgebra.Math
             End If
 
             'swap col -> sign *-1
-            Utility.MathUtil.SwapCol(detMat, 0, 1)
+            MathUtil.SwapCol(detMat, 0, 1)
             detMat.PrintValue()
             d = detMat.Det()
             Console.WriteLine("Determinant:{0}", d)
@@ -473,12 +472,12 @@ Imports SimpleLinearAlgebra.Math
             d = detMat.Det()
             Console.WriteLine("Determinant:{0}", d)
 
-            If Utility.MathUtil.IsCloseToValues(d, 1.0) = False Then
+            If MathUtil.IsCloseToValues(d, 1.0) = False Then
                 Assert.Fail()
             End If
 
             'swap col -> sign *-1
-            Utility.MathUtil.SwapCol(detMat, 0, 1)
+            MathUtil.SwapCol(detMat, 0, 1)
             detMat.PrintValue()
             d = detMat.Det()
             Console.WriteLine("Determinant:{0}", d)
@@ -701,7 +700,7 @@ Imports SimpleLinearAlgebra.Math
                 vec1vec2.PrintValue(name:="vec1vec2")
                 Assert.Fail("error : vector * vector")
             End If
-            If Utility.MathUtil.IsCloseToValues(vec1vec2(0)(0), 32.0) = False Then
+            If MathUtil.IsCloseToValues(vec1vec2(0)(0), 32.0) = False Then
                 vec1vec2.PrintValue(name:="vec1vec2")
                 Assert.Fail("error : vector * vector")
             End If
@@ -719,7 +718,7 @@ Imports SimpleLinearAlgebra.Math
             Dim correctMat As New DenseMatrix(New Double()() {(vec2 * 1.0).ToArray(),
                                                                 (vec2 * 2.0).ToArray(),
                                                                 (vec2 * 3.0).ToArray()})
-            If Utility.MathUtil.IsNearyEqualMatrix(vec2vec1, correctMat) = False Then
+            If MathUtil.IsNearyEqualMatrix(vec2vec1, correctMat) = False Then
                 vec2vec1.PrintValue(name:="vec2vec1")
                 Assert.Fail("error : vector * vector")
             End If
@@ -756,7 +755,7 @@ Imports SimpleLinearAlgebra.Math
     <TestMethod()> Public Sub Mat_Product_MatrixScalar()
         With Nothing
             Dim dimNum = 3
-            Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum)
+            Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum)
             Try
                 For i As Integer = 0 To matA.RowCount - 1
                     For j As Integer = 0 To matA.ColCount - 1
@@ -787,7 +786,7 @@ Imports SimpleLinearAlgebra.Math
     <TestMethod()> Public Sub Mat_Product_ScalarMatrix()
         With Nothing
             Dim dimNum = 3
-            Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum)
+            Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum)
             Try
                 For i As Integer = 0 To matA.RowCount - 1
                     For j As Integer = 0 To matA.ColCount - 1
@@ -822,7 +821,7 @@ Imports SimpleLinearAlgebra.Math
         '3x3 * 2x2
         With Nothing
             Dim dimNum = 3
-            Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum)
+            Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum)
             Dim matB = New DenseMatrix(dimNum - 1, True)
             Try
                 Dim temp = matA * matB
@@ -835,7 +834,7 @@ Imports SimpleLinearAlgebra.Math
         '2x2 * 3x3
         With Nothing
             Dim dimNum = 3
-            Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum - 1)
+            Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum - 1)
             Dim matB = New DenseMatrix(dimNum, True)
             Try
                 Dim temp = matA * matB
@@ -865,13 +864,13 @@ Imports SimpleLinearAlgebra.Math
         '---------
         For dimNum = 2 To 10 - 1
             With Nothing
-                Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum)
+                Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum)
                 Dim matB = New DenseMatrix(dimNum, True)
                 Try
                     Dim temp = matA * matB
                     temp.PrintValue(name:="A*B")
 
-                    If Utility.MathUtil.IsNearyEqualMatrix(temp, matA) = False Then
+                    If MathUtil.IsNearyEqualMatrix(temp, matA) = False Then
                         Assert.Fail("error : {0}x{0}", dimNum)
                     End If
                 Catch myex As MyException
@@ -880,13 +879,13 @@ Imports SimpleLinearAlgebra.Math
             End With
 
             With Nothing
-                Dim matA = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum)
+                Dim matA = MathUtil.CreateRandomSymmetricMatrix(dimNum)
                 Dim matB = New DenseMatrix(dimNum, False)
                 Try
                     Dim temp = matA * matB
                     temp.PrintValue(name:="B(zero)*A")
 
-                    If Utility.MathUtil.IsNearyEqualMatrix(temp, matB) = False Then
+                    If MathUtil.IsNearyEqualMatrix(temp, matB) = False Then
                         Assert.Fail("error : {0}x{0}", dimNum)
                     End If
                 Catch myex As MyException
@@ -912,7 +911,7 @@ Imports SimpleLinearAlgebra.Math
                 End If
 
                 'check value
-                If Utility.MathUtil.IsNearyEqualMatrix(temp, matA) = False Then
+                If MathUtil.IsNearyEqualMatrix(temp, matA) = False Then
                     Assert.Fail()
                 End If
             Catch myex As MyException
@@ -928,14 +927,14 @@ Imports SimpleLinearAlgebra.Math
         Dim rng = New Random()
         For i As Integer = 2 To 50 - 1
             Dim dimNum = i
-            Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng)
+            Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng)
 
             '転置
             Dim t = source.T()
             t = t.T()
 
             'check
-            If Utility.MathUtil.IsNearyEqualMatrix(t, source) = True Then
+            If MathUtil.IsNearyEqualMatrix(t, source) = True Then
                 'OK
             Else
                 source.PrintValue(name:="source")
@@ -952,11 +951,11 @@ Imports SimpleLinearAlgebra.Math
         With Nothing
             Dim dimNum = 1
             Dim rng = New Random()
-            Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng)
+            Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng)
             Dim product = source * source.Inverse()
 
             'check
-            If Utility.MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -970,7 +969,7 @@ Imports SimpleLinearAlgebra.Math
 
             'check Identy matrix I = A * A^-1
             Dim productMat = source * sourceInv
-            If Utility.MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -978,11 +977,11 @@ Imports SimpleLinearAlgebra.Math
             End If
 
             'col swap
-            Utility.MathUtil.SwapCol(source, 0, 1)
+            MathUtil.SwapCol(source, 0, 1)
             sourceInv = source.Inverse()
             productMat = source * sourceInv
             'check
-            If Utility.MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(3, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(3, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -998,7 +997,7 @@ Imports SimpleLinearAlgebra.Math
 
             'check Identy matrix I = A * A^-1
             Dim productMat = source * sourceInv
-            If Utility.MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -1006,11 +1005,11 @@ Imports SimpleLinearAlgebra.Math
             End If
 
             'col swap
-            Utility.MathUtil.SwapCol(source, 0, 1)
+            MathUtil.SwapCol(source, 0, 1)
             sourceInv = source.Inverse()
             productMat = source * sourceInv
             'check
-            If Utility.MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(3, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(3, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -1029,7 +1028,7 @@ Imports SimpleLinearAlgebra.Math
 
             'check Identy matrix I = A * A^-1
             Dim productMat = source * sourceInv
-            If Utility.MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
+            If MathUtil.IsNearyEqualMatrix(productMat, New DenseMatrix(source.RowCount, True)) = True Then
                 'OK
             Else
                 source.PrintValue(name:="Source matrix")
@@ -1040,13 +1039,13 @@ Imports SimpleLinearAlgebra.Math
             Dim rng = New Random()
             For i = 0 To 100 - 1
                 Dim dimNum = 4
-                Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng, isIncludeZero:=True, isFloating:=True)
+                Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng, isIncludeZero:=True, isFloating:=True)
                 Try
                     Dim souceInv = source.Inverse()
                     Dim product = source * souceInv
 
                     'check
-                    If Utility.MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
+                    If MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
                         'OK
                     Else
                         source.PrintValue(name:="is not equal Source matrix")
@@ -1063,13 +1062,13 @@ Imports SimpleLinearAlgebra.Math
             Dim rng = New Random()
             For i = 5 To 10 - 1
                 Dim dimNum = i
-                Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
+                Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
                 Try
                     Dim souceInv = source.Inverse()
                     Dim product = source * souceInv
 
                     'check
-                    If Utility.MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
+                    If MathUtil.IsNearyEqualMatrix(product, New DenseMatrix(dimNum, True)) = True Then
                         'OK
                     Else
                         source.PrintValue(name:="Source matrix")
@@ -1095,7 +1094,7 @@ Imports SimpleLinearAlgebra.Math
             Dim c = tempMat.Cholesky()
             Dim check = c * c.T()
 
-            If Utility.MathUtil.IsNearyEqualMatrix(tempMat, check) = False Then
+            If MathUtil.IsNearyEqualMatrix(tempMat, check) = False Then
                 tempMat.PrintValue(name:=String.Format("error source(dim={0})", tempMat.RowCount))
                 c.PrintValue(name:="L")
                 Assert.Fail()
@@ -1111,7 +1110,7 @@ Imports SimpleLinearAlgebra.Math
             Dim c = tempMat.Cholesky()
             Dim check = c * c.T()
 
-            If Utility.MathUtil.IsNearyEqualMatrix(tempMat, check) = False Then
+            If MathUtil.IsNearyEqualMatrix(tempMat, check) = False Then
                 tempMat.PrintValue(name:=String.Format("error source(dim={0})", tempMat.RowCount))
                 c.PrintValue(name:="L")
                 Assert.Fail()
@@ -1127,7 +1126,7 @@ Imports SimpleLinearAlgebra.Math
         For j As Integer = 2 To 20 - 1
             For i As Integer = 0 To 50 - 1
                 Dim matDim = j
-                Dim srcMat = Utility.MathUtil.CreateRandomSymmetricMatrix(matDim, rng:=rng)
+                Dim srcMat = MathUtil.CreateRandomSymmetricMatrix(matDim, rng:=rng)
 
                 'eigen
                 Dim eigen As Eigen = Nothing
@@ -1140,7 +1139,7 @@ Imports SimpleLinearAlgebra.Math
                 ' I = V * V^T
                 Dim matI = retM * retM.T
                 'matI.PrintValue(name:="EigenVector * EivenVector^T")
-                If Utility.MathUtil.IsNearyEqualMatrix(matI, New DenseMatrix(matDim, True)) = False Then
+                If MathUtil.IsNearyEqualMatrix(matI, New DenseMatrix(matDim, True)) = False Then
                     srcMat.PrintValue(name:="Source")
                     Assert.Fail("Error eigen() EigenVector * EivenVector^T dim={0} try={1}", matDim, i)
                 End If
@@ -1149,7 +1148,7 @@ Imports SimpleLinearAlgebra.Math
                 ' Source = V * D * V^T
                 Dim temp = retM * retV.ToDiagonalMatrix() * retM.T()
                 'temp.PrintValue(name:="V*D*V^T")
-                If Utility.MathUtil.IsNearyEqualMatrix(srcMat, temp) = False Then
+                If MathUtil.IsNearyEqualMatrix(srcMat, temp) = False Then
                     srcMat.PrintValue(name:="Source")
                     Assert.Fail("Error eigen() V*D*V^T dim={0} try={1}", matDim, i)
                 End If
@@ -1166,7 +1165,7 @@ Imports SimpleLinearAlgebra.Math
             Console.WriteLine("Dim={0} run", j)
             For i = 0 To 1000 - 1
                 Dim dimNum = j
-                Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
+                Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
 
                 If i Mod 2 = 0 Then
                     source(0)(0) = 0.0
@@ -1180,7 +1179,7 @@ Imports SimpleLinearAlgebra.Math
 
                 'check
                 Dim flg = True
-                If Utility.MathUtil.IsNearyEqualMatrix(source, P * L * U) = True Then
+                If MathUtil.IsNearyEqualMatrix(source, P * L * U) = True Then
                     'OK
                 Else
                     flg = False
@@ -1198,7 +1197,7 @@ Imports SimpleLinearAlgebra.Math
 
         With Nothing
             Dim dimNum = 4
-            Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
+            Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
 
             '列を0に
             source(2)(0) = 0.0
@@ -1232,10 +1231,10 @@ Imports SimpleLinearAlgebra.Math
         For i = 2 To 10 - 1
             Dim dimNum = i
             For j As Integer = 0 To 300 - 1
-                Dim source = Utility.MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
+                Dim source = MathUtil.CreateRandomSymmetricMatrix(dimNum, rng:=rng)
                 Try
                     Dim matLUP = source.LUP()
-                    If Utility.MathUtil.IsCloseToZero(matLUP.Det) = True Then
+                    If MathUtil.IsCloseToZero(matLUP.Det) = True Then
                         Continue For
                     End If
 
@@ -1244,7 +1243,7 @@ Imports SimpleLinearAlgebra.Math
                     Dim result = matLUP.Solve((New DenseMatrix(dimNum, True))(0))
 
                     'check
-                    If Utility.MathUtil.IsNearyEqualVector(colVec, result) = True Then
+                    If MathUtil.IsNearyEqualVector(colVec, result) = True Then
                         'OK
                     Else
                         source.PrintValue(name:="Source vector")
@@ -1279,7 +1278,7 @@ Imports SimpleLinearAlgebra.Math
 
             'check
             Dim isOK = False
-            If Utility.MathUtil.IsNearyEqualMatrix(result, correct, 0.0001) = True Then
+            If MathUtil.IsNearyEqualMatrix(result, correct, 0.0001) = True Then
                 isOK = True
             End If
             If isOK = False Then
