@@ -533,8 +533,8 @@ Public Class DenseVector : Inherits List(Of Double)
             Throw New MyException(MyException.ErrorSeries.NotComputable, "2 dim outerproduct is scalar. this value is area.")
         ElseIf ai_source.Count = 3 Then
             ret(0) = Me(1) * ai_source(2) - Me(2) * ai_source(1)
-            ret(1) = Me(2) * ai_source(0) - Me(2) * ai_source(2)
-            ret(2) = Me(0) * ai_source(1) - Me(2) * ai_source(0)
+            ret(1) = Me(2) * ai_source(0) - Me(0) * ai_source(2)
+            ret(2) = Me(0) * ai_source(1) - Me(1) * ai_source(0)
         Else
             Throw New MyException(MyException.ErrorSeries.NotComputable, "sorry, not implementation")
         End If

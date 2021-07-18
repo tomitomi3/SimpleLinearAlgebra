@@ -1313,4 +1313,60 @@ Imports SimpleLinearAlgebra
         Assert.AreEqual(tempMat.ColCount, 2)
     End Sub
 
+    <TestMethod()> Public Sub Vec_OuterProduct()
+        '0dim
+        Try
+            Dim v1 = New DenseVector(New Double() {})
+            Dim v2 = New DenseVector(New Double() {})
+            Dim temp = v1.OuterProduct(v2)
+            Assert.Fail("{0} dim not detect exception", v1.Count)
+        Catch ex As Exception
+            'ok
+        End Try
+
+        '1dim
+        Try
+            Dim v1 = New DenseVector(New Double() {1})
+            Dim v2 = New DenseVector(New Double() {1})
+            Dim temp = v1.OuterProduct(v2)
+            Assert.Fail("{0} dim not detect exception", v1.Count)
+        Catch ex As Exception
+            'ok
+        End Try
+
+        '2dim
+        Try
+            Dim v1 = New DenseVector(New Double() {1, 1})
+            Dim v2 = New DenseVector(New Double() {1, 1})
+            Dim temp = v1.OuterProduct(v2)
+            Assert.Fail("{0} dim not detect exception", v1.Count)
+        Catch ex As Exception
+            'ok
+        End Try
+
+        '4dim
+        Try
+            Dim v1 = New DenseVector(New Double() {1, 1, 1, 1})
+            Dim v2 = New DenseVector(New Double() {1, 1, 1, 1})
+            Dim temp = v1.OuterProduct(v2)
+            Assert.Fail("{0} dim not detect exception", v1.Count)
+        Catch ex As Exception
+            'ok
+        End Try
+
+        '3 dim
+        With Nothing
+            Dim v1 = New DenseVector(New Double() {3, 4, 1})
+            Dim v2 = New DenseVector(New Double() {3, 7, 5})
+            Try
+                Dim temp = v1.OuterProduct(v2)
+                Assert.AreEqual(temp(0), 13, 0.0000000001)
+                Assert.AreEqual(temp(1), -12, 0.0000000001)
+                Assert.AreEqual(temp(2), 9, 0.0000000001)
+            Catch ex As Exception
+                Assert.Fail("{0} dim detect exception", v1.Count)
+            End Try
+        End With
+    End Sub
+
 End Class
