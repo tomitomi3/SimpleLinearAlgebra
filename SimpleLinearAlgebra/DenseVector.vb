@@ -5,7 +5,6 @@
 ''' Inherits List(of double)
 ''' </remarks>
 <Serializable>
-<DebuggerDisplay("Count={Me.Count}")>
 Public Class DenseVector : Inherits List(Of Double)
     ''' <summary>
     ''' Direction( RowVector or ColVector )
@@ -70,6 +69,16 @@ Public Class DenseVector : Inherits List(Of Double)
         Me.AddRange(ai_val)
         Me.m_direcition = ai_direction
     End Sub
+
+    ''' <summary>
+    ''' Constructor
+    ''' </summary>
+    ''' <param name="args">double[]</param>
+    Public Sub New(ParamArray args As Double())
+        Me.AddRange(args)
+        Me.m_direcition = VectorDirection.ROW
+    End Sub
+
 #End Region
 
 #Region "Property"
@@ -112,7 +121,7 @@ Public Class DenseVector : Inherits List(Of Double)
     ''' <param name="ai_ar"></param>
     ''' <returns></returns>
     ''' <remarks>
-    ''' double() -> clsShoddyVector
+    ''' double() -> vector class
     ''' </remarks>
     Public Shared Widening Operator CType(ByVal ai_ar() As Double) As DenseVector
         Return New DenseVector(ai_ar)
@@ -368,22 +377,34 @@ Public Class DenseVector : Inherits List(Of Double)
     ''' For Debug
     ''' </summary>
     ''' <param name="ai_preci"></param>
-    ''' <remarks></remarks>
-    Public Sub PrintValue(Optional ByVal ai_preci As Integer = 4, Optional ByVal name As String = "")
+    ''' <param name="name"></param>
+    ''' <param name="isScientificNotation"></param>
+    Public Sub PrintValue(Optional ByVal ai_preci As Integer = 4,
+                          Optional ByVal name As String = "",
+                          Optional isScientificNotation As Boolean = False)
         Dim str As New System.Text.StringBuilder()
         If String.IsNullOrEmpty(name) = False Then
-            str.Append(String.Format("{0} =", name) & Environment.NewLine)
+            str.Append(String.Format("{0} {1}=", name, Me.Count) & Environment.NewLine)
         Else
-            str.Append("Vec =" & Environment.NewLine)
+            str.Append(String.Format("Vec {0} =", Me.Count) & Environment.NewLine)
         End If
         If Me.m_direcition = VectorDirection.ROW Then
             For i As Integer = 0 To Me.Count - 1
-                str.Append(Me(i).ToString("F" & ai_preci.ToString()) & vbTab)
+                If isScientificNotation = False Then
+                    str.Append(Me(i).ToString("F" & ai_preci.ToString()) & vbTab)
+                Else
+                    str.Append(Me(i).ToString("G" & ai_preci.ToString()) & vbTab)
+                End If
             Next
             str.AppendLine("")
         Else
             For i As Integer = 0 To Me.Count - 1
-                str.Append(Me(i).ToString("F" & ai_preci.ToString()))
+
+                If isScientificNotation = False Then
+                    str.Append(Me(i).ToString("F" & ai_preci.ToString()))
+                Else
+                    str.Append(Me(i).ToString("G" & ai_preci.ToString()))
+                End If
                 str.AppendLine("")
             Next
         End If
@@ -514,23 +535,25 @@ Public Class DenseVector : Inherits List(Of Double)
     End Function
 
     ''' <summary>
-    ''' Product(Outer product, cross product)
+    ''' Product(Cross product)
     ''' </summary>
     ''' <param name="ai_source"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function OuterProduct(ByVal ai_source As DenseVector) As DenseVector
+    Public Function CrossProduct(ByVal ai_source As DenseVector) As DenseVector
+        'https://en.wikipedia.org/wiki/Cross_product
+
         If IsSameDimension(ai_source, Me) = False Then
             Throw New MyException(MyException.ErrorSeries.DifferElementNumber)
         End If
 
         Dim ret = New DenseVector(ai_source.Count)
         If ai_source.Count = 0 Then
-            Throw New MyException(MyException.ErrorSeries.NotComputable, "OuterProduct")
+            Throw New MyException(MyException.ErrorSeries.NotComputable, "sorry, not implementation")
         ElseIf ai_source.Count = 1 Then
-            Throw New MyException(MyException.ErrorSeries.NotComputable, "OuterProduct")
+            Throw New MyException(MyException.ErrorSeries.NotComputable, "sorry, not implementation")
         ElseIf ai_source.Count = 2 Then
-            Throw New MyException(MyException.ErrorSeries.NotComputable, "2 dim outerproduct is scalar. this value is area.")
+            Throw New MyException(MyException.ErrorSeries.NotComputable, "sorry, not implementation")
         ElseIf ai_source.Count = 3 Then
             ret(0) = Me(1) * ai_source(2) - Me(2) * ai_source(1)
             ret(1) = Me(2) * ai_source(0) - Me(0) * ai_source(2)

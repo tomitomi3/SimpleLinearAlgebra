@@ -1,172 +1,11 @@
 ﻿''' <summary>
-''' store LU decomposition with solver
-''' </summary>
-<Serializable>
-Public Class LU
-    ''' <summary>Pivot matrix</summary>
-    Public Property P As DenseMatrix = Nothing
-
-    ''' <summary>Lower matrix</summary>
-    Public Property L As DenseMatrix = Nothing
-
-    ''' <summary>Upper matrix</summary>
-    Public Property U As DenseMatrix = Nothing
-
-    ''' <summary>Determinant</summary>
-    Public Property Det As Double = 0.0
-
-    ''' <summary>pivto row info</summary>
-    Public Property PivotRow As Integer() = Nothing
-
-    ''' <summary>
-    ''' default constructtor
-    ''' </summary>
-    Private Sub New()
-    End Sub
-
-    ''' <summary>
-    ''' Constructor
-    ''' </summary>
-    ''' <param name="matP"></param>
-    ''' <param name="matL"></param>
-    ''' <param name="matU"></param>
-    ''' <param name="det"></param>
-    Public Sub New(ByRef matP As DenseMatrix, ByRef matL As DenseMatrix, ByRef matU As DenseMatrix, ByVal det As Double)
-        Me.P = matP
-        Me.L = matL
-        Me.U = matU
-        Me.Det = det
-    End Sub
-
-    ''' <summary>
-    ''' Constructor
-    ''' </summary>
-    ''' <param name="matP"></param>
-    ''' <param name="matL"></param>
-    ''' <param name="matU"></param>
-    ''' <param name="det"></param>
-    Public Sub New(ByRef matP As DenseMatrix, ByRef matL As DenseMatrix, ByRef matU As DenseMatrix, ByVal det As Double, ByRef p() As Integer)
-        Me.P = matP
-        Me.L = matL
-        Me.U = matU
-        Me.Det = det
-        Me.PivotRow = p
-    End Sub
-
-    ''' <summary>
-    ''' solve(Ax=b)
-    ''' </summary>
-    ''' <param name="b"></param>
-    ''' <returns></returns>
-    Public Function Solve(ByRef b As DenseVector) As DenseVector
-        Return Me.Solve(Me.P, Me.L, Me.U, Me.PivotRow, b)
-    End Function
-
-    ''' <summary>
-    ''' solve(Ax=b)
-    ''' </summary>
-    ''' <param name="matP">pivot matrix(LU decomposition of A matrix)</param>
-    ''' <param name="matL">lower triangle matrix(LU decomposition of A matrix)</param>
-    ''' <param name="matU">upper triangle matrix(LU decomposition of A matrix)</param>
-    ''' <param name="pivotRow"></param>
-    ''' <param name="vecB"></param>
-    ''' <returns>x</returns>
-    Private Function Solve(ByRef matP As DenseMatrix,
-                               ByRef matL As DenseMatrix,
-                               ByRef matU As DenseMatrix,
-                               ByRef pivotRow() As Integer,
-                               ByRef vecB As DenseVector) As DenseVector
-        Dim n = matP.ColCount
-        Dim x = New DenseVector(n)
-        Dim y = New DenseVector(n)
-
-        'transopose
-        'Dim b = vecB * matP
-
-        For i = 0 To n - 1
-            Dim s = 0.0
-            Dim j As Integer = 0
-            For j = 0 To i - 1
-                s += matL(i)(j) * y(j)
-            Next
-
-            'y(j) = b(i) - s
-            y(j) = vecB(pivotRow(i)) - s
-        Next
-
-        For i = n - 1 To 0 Step -1
-            Dim s = 0.0
-            For k = i + 1 To n - 1
-                s += matU(i)(k) * x(k)
-            Next
-            x(i) = (y(i) - s) / matU(i)(i)
-        Next
-
-        Return x
-    End Function
-End Class
-
-''' <summary>
-''' store SVD decomposition
-''' </summary>
-<Serializable>
-Public Class SVD
-    ''' <summary></summary>
-    Public Property S As DenseMatrix = Nothing
-
-    ''' <summary></summary>
-    Public Property V As DenseVector = Nothing
-
-    ''' <summary></summary>
-    Public Property D As DenseMatrix = Nothing
-
-    Private Sub New()
-    End Sub
-
-    Public Sub New(ByRef matS As DenseMatrix, ByRef matV As DenseVector, ByRef matD As DenseMatrix)
-        Me.S = matS
-        Me.V = matV
-        Me.D = matD
-    End Sub
-End Class
-
-''' <summary>
-''' store Eigen values, vector
-''' </summary>
-<Serializable>
-Public Class Eigen
-    ''' <summary></summary>
-    Public Property EigenValue As DenseVector = Nothing
-
-    ''' <summary></summary>
-    Public Property EigenVector As DenseMatrix = Nothing
-
-    ''' <summary></summary>
-    Public Property IsConversion As Boolean = Nothing
-
-    Private Sub New()
-    End Sub
-
-    Public Sub New(ByRef eigeValue As DenseVector, ByRef eigenVec As DenseMatrix)
-        Me.EigenValue = eigeValue
-        Me.EigenVector = eigenVec
-    End Sub
-
-    Public Sub New(ByRef eigeValue As DenseVector, ByRef eigenVec As DenseMatrix, ByVal isconversion As Boolean)
-        Me.EigenValue = eigeValue
-        Me.EigenVector = eigenVec
-        Me.IsConversion = isconversion
-    End Sub
-End Class
-
-''' <summary>
 ''' Matrix class
 ''' </summary>
 ''' <remarks>
 ''' Inherits List(Of List(Of Double))
 ''' </remarks>
+''' delete DebuggerDisplay
 <Serializable>
-<DebuggerDisplay("Row={RowCount()}, Col={ColCount()}")>
 Public Class DenseMatrix : Inherits List(Of List(Of Double))
     Public Const SAME_ZERO As Double = 2.0E-50 '2.0*10^-50
     Public Const MachineEpsiron As Double = 0.000000000000000222 ' 2.20*E-16 = 2.20*10^-16
@@ -249,7 +88,7 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' </summary>
     ''' <param name="ai_val"></param>
     ''' <remarks></remarks>
-    Public Sub New(ByVal ai_val()() As Double)
+    Public Sub New(ParamArray ai_val As Double()())
         For i As Integer = 0 To ai_val.Length - 1
             Me.Add(New DenseVector(ai_val(i)))
         Next
@@ -305,6 +144,20 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     End Property
 
     ''' <summary>
+    ''' DenseMatrix -> double[][]
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function ToArrayMulti() As Double()()
+        Dim ret = New Double(Me.Count - 1)() {}
+
+        For i As Integer = 0 To Me.Count - 1
+            ret(i) = Me(i).ToArray()
+        Next
+
+        Return ret
+    End Function
+
+    ''' <summary>
     ''' Get Collumn count
     ''' </summary>
     ''' <returns></returns>
@@ -344,11 +197,11 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' <remarks></remarks>
     Public Property Column(ByVal ai_colIndex As Integer) As DenseVector
         Get
-            Dim temp(Me.RowCount - 1) As Double
-            For i As Integer = 0 To temp.Length - 1
-                temp(i) = Me.Row(i)(ai_colIndex)
+            '            Dim temp(Me.RowCount - 1) As Double
+            Dim tempVector As New DenseVector(Me.RowCount)
+            For i As Integer = 0 To tempVector.Count - 1
+                tempVector(i) = Me.Row(i)(ai_colIndex)
             Next
-            Dim tempVector As New DenseVector(temp)
             tempVector.Direction = DenseVector.VectorDirection.COL
             Return tempVector
         End Get
@@ -769,14 +622,34 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
         '------------------------------------------------------------------
         'using Paralle .NET4
         'Dim pOption = New Threading.Tasks.ParallelOptions()
-        Threading.Tasks.Parallel.For(0, ret.RowCount,
-                                             Sub(rowIndex)
-                                                 ret.Row(rowIndex) = Me.Column(rowIndex)
-                                             End Sub)
+        Parallel.For(0, ret.RowCount,
+            Sub(rowIndex)
+                ret.Row(rowIndex) = Me.Column(rowIndex)
+            End Sub)
 #End If
 
         Return ret
     End Function
+
+    ''' <summary>
+    ''' set Identify matrix
+    ''' </summary>
+    Public Sub SetIdentifyMatrix()
+        Dim n_dim = Me.RowCount
+        Dim m_dim = Me.ColCount
+        If m_dim <> n_dim Then
+            Throw New MyException(MyException.ErrorSeries.DifferRowNumberAndCollumnNumber)
+        End If
+        For i = 0 To n_dim - 1
+            For j = 0 To n_dim - 1
+                If i = j Then
+                    Me(i)(j) = 1.0
+                Else
+                    Me(i)(j) = 0
+                End If
+            Next
+        Next
+    End Sub
 
     ''' <summary>
     ''' Convert to a matrix with only diagonal values
@@ -814,17 +687,24 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' For Debug
     ''' </summary>
     ''' <param name="ai_preci"></param>
-    ''' <remarks></remarks>
-    Public Sub PrintValue(Optional ByVal ai_preci As Integer = 1, Optional ByVal name As String = "")
+    ''' <param name="name"></param>
+    ''' <param name="isScientificNotation"></param>
+    Public Sub PrintValue(Optional ByVal ai_preci As Integer = 4,
+                          Optional ByVal name As String = "",
+                          Optional isScientificNotation As Boolean = False)
         Dim str As New System.Text.StringBuilder()
         If String.IsNullOrEmpty(name) = False Then
-            str.Append(String.Format("{0} =", name) & Environment.NewLine)
+            str.Append(String.Format("{0} {1}x{2} =", name, Me.RowCount, Me.ColCount) & Environment.NewLine)
         Else
-            str.Append("Mat =" & Environment.NewLine)
+            str.Append(String.Format("Mat {0}x{1} =", Me.RowCount, Me.ColCount) & Environment.NewLine)
         End If
         For Each vec As DenseVector In Me
             For i As Integer = 0 To vec.Count - 1
-                str.Append(vec(i).ToString("F" & ai_preci.ToString()) & vbTab)
+                If isScientificNotation = False Then
+                    str.Append(vec(i).ToString("F" & ai_preci.ToString()) & vbTab)
+                Else
+                    str.Append(vec(i).ToString("G" & ai_preci.ToString()) & vbTab)
+                End If
             Next
             str.Append(Environment.NewLine)
         Next
@@ -1001,13 +881,13 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' <summary>
     ''' Average vector
     ''' </summary>
-    ''' <param name="isRowOrder">True:data sequence is "row".</param>
+    ''' <param name="vectorDirection"></param>
     ''' <returns></returns>
-    Public Function AverageVector(ByVal isRowOrder As Boolean) As DenseVector
+    Public Function AverageVector(ByVal vectorDirection As DenseVector.VectorDirection) As DenseVector
         Dim row = Me.RowCount
         Dim col = Me.ColCount
         Dim ret As DenseVector = Nothing
-        If isRowOrder Then
+        If vectorDirection = DenseVector.VectorDirection.ROW Then
             ret = New DenseVector(col, DenseVector.VectorDirection.COL)
             For j = 0 To col - 1
                 For i = 0 To row - 1
@@ -1066,11 +946,20 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' <summary>
     ''' Inverse
     ''' </summary>
-    ''' <param name="same_zero_value">optional:2.0E-50</param>
+    ''' <param name="eps">default 2.0E-50</param>
+    ''' <param name="isUsingLUDecomposition"></param>
+    ''' <param name="isForceInverse"></param>
     ''' <returns></returns>
-    Public Function Inverse(Optional ByVal same_zero_value As Double = SAME_ZERO) As DenseMatrix
+    Public Function Inverse(Optional ByVal eps As Double = DenseMatrix.MachineEpsiron,
+                            Optional ByVal isUsingLUDecomposition As Boolean = False,
+                            Optional ByVal isForceInverse As Boolean = False
+                            ) As DenseMatrix
         If Me.RowCount <> Me.ColCount Then
             Return New DenseMatrix(0)
+        End If
+
+        If isForceInverse = True Then
+            eps = Double.Epsilon
         End If
 
         Dim n As Integer = Me.RowCount
@@ -1079,13 +968,13 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
         If n = 0 Then
             'nop
         ElseIf n = 1 Then
-            If MathUtil.IsCloseToZero(source(0)(0)) = True Then
+            If MathUtil.IsCloseToZero(source(0)(0), eps) = True Then
                 Throw New MyException(MyException.ErrorSeries.NotComputable, "Inverse 1x1")
             End If
             retInverse(0)(0) = 1.0 / source(0)(0)
-        ElseIf n = 2 Then
-            Dim det = Me(0)(0) * Me(1)(1) - Me(0)(1) * Me(1)(0)
-            If MathUtil.IsCloseToZero(det) = True Then
+        ElseIf n = 2 AndAlso isUsingLUDecomposition = False Then
+            Dim det = Me.Det()
+            If MathUtil.IsCloseToZero(det, eps) = True Then
                 Throw New MyException(MyException.ErrorSeries.NotComputable, "Inverse 2x2")
             End If
             det = 1.0 / det
@@ -1093,9 +982,9 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
             retInverse(0)(1) = det * -Me(0)(1)
             retInverse(1)(0) = det * -Me(1)(0)
             retInverse(1)(1) = det * Me(0)(0)
-        ElseIf n = 3 Then
+        ElseIf n = 3 AndAlso isUsingLUDecomposition = False Then
             Dim det = Me.Det()
-            If MathUtil.IsCloseToZero(det) = True Then
+            If MathUtil.IsCloseToZero(det, eps) = True Then
                 Throw New MyException(MyException.ErrorSeries.NotComputable, "Inverse 3x3")
             End If
             retInverse(0)(0) = ((Me(1)(1) * Me(2)(2) - Me(1)(2) * Me(2)(1))) / det
@@ -1108,35 +997,32 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
             retInverse(2)(1) = -((Me(0)(0) * Me(2)(1) - Me(0)(1) * Me(2)(0))) / det
             retInverse(2)(2) = ((Me(0)(0) * Me(1)(1) - Me(0)(1) * Me(1)(0))) / det
         Else
-            Try
-                Dim lup = Me.LUP()
-                'lup.P = lup.P.T() 'Transopose = Inverse
-                For j = 0 To n - 1
-                    Dim y = New DenseVector(n)
-                    Dim b = lup.P(j)
-                    For i = 0 To n - 1
-                        Dim s = 0.0
-                        Dim k As Integer = 0
-                        For k = 0 To i - 1
-                            s += lup.L(i)(k) * y(k)
-                        Next
-                        y(k) = b(i) - s
-                    Next
-                    For i = n - 1 To 0 Step -1
-                        Dim s = 0.0
-                        For k = i + 1 To n - 1
-                            s += lup.U(i)(k) * retInverse(k)(j)
-                        Next
-                        retInverse(i)(j) = (y(i) - s) / lup.U(i)(i)
-                    Next
-                Next
+            Dim lup = Me.LUP()
+            Dim det = lup.Det
+            If MathUtil.IsCloseToZero(det, eps) = True Then
+                Throw New MyException(MyException.ErrorSeries.NotComputable, String.Format("Inverse {0}x{0} det=0", n))
+            End If
 
-                If MathUtil.IsCloseToZero(lup.Det) = True Then
-                    Throw New MyException(MyException.ErrorSeries.NotComputable, String.Format("Inverse {0}x{0}", n))
-                End If
-            Catch ex As Exception
-                Throw New MyException(MyException.ErrorSeries.NotComputable, String.Format("Inverse {0}x{0}", n) + ex.Message)
-            End Try
+            'lup.P = lup.P.T() 'Transopose = Inverse
+            For j = 0 To n - 1
+                Dim y = New DenseVector(n)
+                Dim b = lup.P(j)
+                For i = 0 To n - 1
+                    Dim s = 0.0
+                    Dim k As Integer = 0
+                    For k = 0 To i - 1
+                        s += lup.L(i)(k) * y(k)
+                    Next
+                    y(k) = b(i) - s
+                Next
+                For i = n - 1 To 0 Step -1
+                    Dim s = 0.0
+                    For k = i + 1 To n - 1
+                        s += lup.U(i)(k) * retInverse(k)(j)
+                    Next
+                    retInverse(i)(j) = (y(i) - s) / lup.U(i)(i)
+                Next
+            Next
         End If
         Return retInverse
     End Function
@@ -1486,6 +1372,86 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     End Function
 
     ''' <summary>
+    ''' Householder Transformation
+    ''' </summary>
+    ''' <remarks>
+    ''' 非対称行列をハウスホルダー変換 → ヘッセンベルグ行列
+    ''' 対称行列をハウスホルダー変換 → 三重対角行列
+    ''' </remarks>
+    ''' <returns></returns>
+    Public Function Householder() As DenseMatrix
+        Dim a = New DenseMatrix(Me)
+        Dim n = a.Count
+        Dim f = New DenseVector(n)
+        Dim g = New DenseVector(n)
+        Dim u = New DenseVector(n)
+
+        For k = 0 To n - 3
+            For i = 0 To k
+                u(i) = 0
+            Next
+            For i = k + 1 To n - 1
+                u(i) = a(i)(k) 'col
+            Next
+
+            Dim ss = 0.0
+            For i = k + 2 To n - 1
+                ss += u(i) * u(i)
+            Next
+            If MathUtil.IsCloseToZero(ss) = True Then
+                Continue For
+            End If
+            Dim s = System.Math.Sqrt(ss + u(k + 1) * u(k + 1))
+            If u(k + 1) > 0.0 Then
+                s = -s
+            End If
+
+            u(k + 1) -= s
+            Dim uu = System.Math.Sqrt(ss + u(k + 1) * u(k + 1))
+            For i = k + 1 To n - 1
+                u(i) /= uu
+            Next
+
+            For i = 0 To n - 1
+                f(i) = 0.0
+                g(i) = 0.0
+                For j = k + 1 To n - 1
+                    f(i) += a(i)(j) * u(j)
+                    g(i) += a(j)(i) * u(j)
+                Next
+            Next
+
+            Dim gamma = 0.0
+            For j = 0 To n - 1
+                gamma += u(j) * g(j)
+            Next
+
+            For i = 0 To n - 1
+                f(i) -= gamma * u(i)
+                g(i) -= gamma * u(i)
+            Next
+
+            For i = 0 To n - 1
+                For j = 0 To n - 1
+                    a(i)(j) = a(i)(j) - 2.0 * u(i) * g(j) - 2.0 * f(i) * u(j)
+                Next
+            Next
+        Next
+        Return a
+    End Function
+
+    '--------------------------------------------------------------------------------------------
+    '固有値、固有ベクトルを求める方針
+    ' 反復計算によって求める。計算しやすい行列に変換
+    '対称行列 or 非対称行列
+    ' 対称行列   :べき乗法、ヤコビ法、三重対角行列->QR法
+    ' 非対称行列 :ヘッセンベルグ行列->QR法
+    'QR法の高速
+    ' 原点移動（ウィルキンソンシフト）、減次（デフレーション）
+    ' QR法だと固有値のみ固有ベクトルは別途計算
+    '--------------------------------------------------------------------------------------------
+
+    ''' <summary>
     ''' Eigen decomposition using Jacobi Method. for Symmetric Matrix.
     ''' Memo: A = V*D*V−1, D is diag(eigen value1 ... eigen valueN), V is eigen vectors. V is orthogonal matrix.
     ''' </summary>
@@ -1494,22 +1460,16 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
     ''' <param name="IsSort">descent sort by EigenValue default:true</param>
     ''' <returns></returns>
     Public Function Eigen(Optional ByVal Iteration As Integer = 1000,
-                              Optional ByVal Conversion As Double = 0.000000000000001,
-                              Optional ByVal IsSort As Boolean = True) As Eigen
-        '固有値、固有ベクトルを求める方針
-        ' 反復計算によって求める。計算しやすい行列に変換
-        '対称行列 or 非対称行列
-        ' 対称行列   :べき乗法、ヤコビ法、三重対角行列->QR法
-        ' 非対称行列 :ヘッセンベルグ行列->QR法
-        'QR法の高速
-        ' 原点移動（ウィルキンソンシフト）、減次（デフレーション）
-        ' QR法だと固有値のみ固有ベクトルは別途計算
-
+                          Optional ByVal Conversion As Double = 0.000000000000001,
+                          Optional ByVal IsSort As Boolean = True,
+                          Optional ByVal IsSymmetricCheck As Boolean = False) As Eigen
         If Me.IsSquare() = False Then
             Throw New MyException(MyException.ErrorSeries.DifferRowNumberAndCollumnNumber)
         End If
-        If Me.IsSymmetricMatrix() = False Then
-            Throw New MyException(MyException.ErrorSeries.DifferRowNumberAndCollumnNumber)
+        If IsSymmetricCheck = True Then
+            If Me.IsSymmetricMatrix() = False Then
+                Throw New MyException(MyException.ErrorSeries.DifferRowNumberAndCollumnNumber)
+            End If
         End If
 
         Dim size = Me.ColCount()
@@ -1592,7 +1552,9 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
 
         Return New Eigen(eigenValue, rotate, isConversion)
     End Function
+#End Region
 
+#Region "Public experiment Eigen"
     ''' <summary>
     ''' Eigen
     ''' </summary>
@@ -1798,7 +1760,7 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
                 End If
 
                 '単位行列に初期化
-                MathUtil.SetIdentifyMatrix(q)
+                q.SetIdentifyMatrix()
 
                 For i = 0 To m - 1
                     Dim sint = 0.0
@@ -1948,7 +1910,7 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
                 End If
 
                 '単位行列に初期化
-                MathUtil.SetIdentifyMatrix(q)
+                q.SetIdentifyMatrix()
 
                 For i = 0 To m - 1
                     Dim sint = 0.0
@@ -2131,72 +2093,6 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
         Next
     End Sub
 
-    ''' <summary>
-    ''' Householder Transformation
-    ''' 非対称行列をハウスホルダー変換 → ヘッセンベルグ行列
-    ''' 対称行列をハウスホルダー変換 → 三重対角行列
-    ''' </summary>
-    ''' <returns></returns>
-    Public Function Householder() As DenseMatrix
-        Dim a = New DenseMatrix(Me)
-        Dim n = a.Count
-        Dim f = New DenseVector(n)
-        Dim g = New DenseVector(n)
-        Dim u = New DenseVector(n)
-
-        For k = 0 To n - 3
-            For i = 0 To k
-                u(i) = 0
-            Next
-            For i = k + 1 To n - 1
-                u(i) = a(i)(k) 'col
-            Next
-
-            Dim ss = 0.0
-            For i = k + 2 To n - 1
-                ss += u(i) * u(i)
-            Next
-            If MathUtil.IsCloseToZero(ss) = True Then
-                Continue For
-            End If
-            Dim s = System.Math.Sqrt(ss + u(k + 1) * u(k + 1))
-            If u(k + 1) > 0.0 Then
-                s = -s
-            End If
-
-            u(k + 1) -= s
-            Dim uu = System.Math.Sqrt(ss + u(k + 1) * u(k + 1))
-            For i = k + 1 To n - 1
-                u(i) /= uu
-            Next
-
-            For i = 0 To n - 1
-                f(i) = 0.0
-                g(i) = 0.0
-                For j = k + 1 To n - 1
-                    f(i) += a(i)(j) * u(j)
-                    g(i) += a(j)(i) * u(j)
-                Next
-            Next
-
-            Dim gamma = 0.0
-            For j = 0 To n - 1
-                gamma += u(j) * g(j)
-            Next
-
-            For i = 0 To n - 1
-                f(i) -= gamma * u(i)
-                g(i) -= gamma * u(i)
-            Next
-
-            For i = 0 To n - 1
-                For j = 0 To n - 1
-                    a(i)(j) = a(i)(j) - 2.0 * u(i) * g(j) - 2.0 * f(i) * u(j)
-                Next
-            Next
-        Next
-        Return a
-    End Function
 #End Region
 
 #Region "Public Shared"
@@ -2256,4 +2152,165 @@ Public Class DenseMatrix : Inherits List(Of List(Of Double))
         Return True
     End Function
 #End Region
+End Class
+
+''' <summary>
+''' store LU decomposition with solver
+''' </summary>
+<Serializable>
+Public Class LU
+    ''' <summary>Pivot matrix</summary>
+    Public Property P As DenseMatrix = Nothing
+
+    ''' <summary>Lower matrix</summary>
+    Public Property L As DenseMatrix = Nothing
+
+    ''' <summary>Upper matrix</summary>
+    Public Property U As DenseMatrix = Nothing
+
+    ''' <summary>Determinant</summary>
+    Public Property Det As Double = 0.0
+
+    ''' <summary>pivto row info</summary>
+    Public Property PivotRow As Integer() = Nothing
+
+    ''' <summary>
+    ''' default constructtor
+    ''' </summary>
+    Private Sub New()
+    End Sub
+
+    ''' <summary>
+    ''' Constructor
+    ''' </summary>
+    ''' <param name="matP"></param>
+    ''' <param name="matL"></param>
+    ''' <param name="matU"></param>
+    ''' <param name="det"></param>
+    Public Sub New(ByRef matP As DenseMatrix, ByRef matL As DenseMatrix, ByRef matU As DenseMatrix, ByVal det As Double)
+        Me.P = matP
+        Me.L = matL
+        Me.U = matU
+        Me.Det = det
+    End Sub
+
+    ''' <summary>
+    ''' Constructor
+    ''' </summary>
+    ''' <param name="matP"></param>
+    ''' <param name="matL"></param>
+    ''' <param name="matU"></param>
+    ''' <param name="det"></param>
+    Public Sub New(ByRef matP As DenseMatrix, ByRef matL As DenseMatrix, ByRef matU As DenseMatrix, ByVal det As Double, ByRef p() As Integer)
+        Me.P = matP
+        Me.L = matL
+        Me.U = matU
+        Me.Det = det
+        Me.PivotRow = p
+    End Sub
+
+    ''' <summary>
+    ''' solve(Ax=b)
+    ''' </summary>
+    ''' <param name="b"></param>
+    ''' <returns></returns>
+    Public Function Solve(ByRef b As DenseVector) As DenseVector
+        Return Me.Solve(Me.P, Me.L, Me.U, Me.PivotRow, b)
+    End Function
+
+    ''' <summary>
+    ''' solve(Ax=b)
+    ''' </summary>
+    ''' <param name="matP">pivot matrix(LU decomposition of A matrix)</param>
+    ''' <param name="matL">lower triangle matrix(LU decomposition of A matrix)</param>
+    ''' <param name="matU">upper triangle matrix(LU decomposition of A matrix)</param>
+    ''' <param name="pivotRow"></param>
+    ''' <param name="vecB"></param>
+    ''' <returns>x</returns>
+    Private Function Solve(ByRef matP As DenseMatrix,
+                               ByRef matL As DenseMatrix,
+                               ByRef matU As DenseMatrix,
+                               ByRef pivotRow() As Integer,
+                               ByRef vecB As DenseVector) As DenseVector
+        Dim n = matP.ColCount
+        Dim x = New DenseVector(n)
+        Dim y = New DenseVector(n)
+
+        'transopose
+        'Dim b = vecB * matP
+
+        For i = 0 To n - 1
+            Dim s = 0.0
+            Dim j As Integer = 0
+            For j = 0 To i - 1
+                s += matL(i)(j) * y(j)
+            Next
+
+            'y(j) = b(i) - s
+            y(j) = vecB(pivotRow(i)) - s
+        Next
+
+        For i = n - 1 To 0 Step -1
+            Dim s = 0.0
+            For k = i + 1 To n - 1
+                s += matU(i)(k) * x(k)
+            Next
+            x(i) = (y(i) - s) / matU(i)(i)
+        Next
+
+        Return x
+    End Function
+End Class
+
+''' <summary>
+''' store SVD decomposition
+''' </summary>
+<Serializable>
+Public Class SVD
+    ''' <summary></summary>
+    Public Property S As DenseMatrix = Nothing
+
+    ''' <summary></summary>
+    Public Property V As DenseVector = Nothing
+
+    ''' <summary></summary>
+    Public Property D As DenseMatrix = Nothing
+
+    Private Sub New()
+    End Sub
+
+    Public Sub New(ByRef matS As DenseMatrix, ByRef matV As DenseVector, ByRef matD As DenseMatrix)
+        Me.S = matS
+        Me.V = matV
+        Me.D = matD
+    End Sub
+End Class
+
+''' <summary>
+''' store Eigen values, vector
+''' </summary>
+<Serializable>
+Public Class Eigen
+    ''' <summary></summary>
+    Public Property EigenValue As DenseVector = Nothing
+
+    ''' <summary></summary>
+    Public Property EigenVector As DenseMatrix = Nothing
+
+    ''' <summary></summary>
+    Public Property IsConversion As Boolean = Nothing
+
+    Private Sub New()
+    End Sub
+
+    Public Sub New(ByRef eigeValue As DenseVector, ByRef eigenVec As DenseMatrix)
+        Me.EigenValue = eigeValue
+        Me.EigenVector = eigenVec
+    End Sub
+
+    Public Sub New(ByRef eigeValue As DenseVector, ByRef eigenVec As DenseMatrix, ByVal isconversion As Boolean)
+        Me.EigenValue = eigeValue
+        Me.EigenVector = eigenVec
+        Me.IsConversion = isconversion
+    End Sub
 End Class

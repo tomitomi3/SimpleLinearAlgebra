@@ -320,46 +320,44 @@ Public Class MathUtil
     End Sub
 
     ''' <summary>
-    ''' Create Variane Co-Varianve Matrix
+    ''' Create Covariance Matrix
     ''' </summary>
     ''' <param name="mat"></param>
     ''' <param name="isRowOrder">True:The data sequence is "row".</param>
-    ''' <param name="isUnbalanceVariance">use UnbalanceVariance</param>
+    ''' <param name="isUnbalanceVariance">use UnbalanceVariance. default is true</param>
     ''' <returns></returns>
-    Public Shared Function CreateVarCoVarMat(ByRef mat As DenseMatrix,
-                                                 ByVal isRowOrder As Boolean,
-                                                 Optional ByVal isUnbalanceVariance As Boolean = True) As DenseMatrix
+    Public Shared Function CreateCovarianceMatrix(ByRef mat As DenseMatrix,
+                                                  ByVal isRowOrder As Boolean,
+                                                  Optional ByVal isUnbalanceVariance As Boolean = True) As DenseMatrix
+        Dim var_covar As DenseMatrix = Nothing
+
         If isRowOrder = True Then
             'de-mean
-            Dim avev = mat.AverageVector(True)
+            Dim avev = mat.AverageVector(DenseVector.VectorDirection.ROW)
             Dim mat_demean As DenseMatrix = mat - avev
 
             'E[X.T * X] -> 1/N[X.T * X]
             Dim gramMatrix = mat_demean.T * mat_demean
-            Dim var_covar As DenseMatrix = Nothing
             If isUnbalanceVariance Then
                 var_covar = gramMatrix / (mat.RowCount - 1)
             Else
                 var_covar = gramMatrix / mat.RowCount
             End If
-
-            Return var_covar
         Else
             'de-mean
-            Dim avev = mat.AverageVector(False)
+            Dim avev = mat.AverageVector(DenseVector.VectorDirection.COL)
             Dim mat_demean As DenseMatrix = mat - avev
 
             'E[X.T * X] -> 1/N[X.T * X]
             Dim gramMatrix = mat_demean * mat_demean.T
-            Dim var_covar As DenseMatrix = Nothing
             If isUnbalanceVariance Then
                 var_covar = gramMatrix / (mat.RowCount - 1)
             Else
                 var_covar = gramMatrix / mat.RowCount
             End If
-
-            Return var_covar
         End If
+
+        Return var_covar
     End Function
 
     ''' <summary>
@@ -410,19 +408,17 @@ Public Class MathUtil
     End Function
 
     ''' <summary>
-    ''' set identify matrix
+    ''' 相対誤差 | target - true | / target
     ''' </summary>
-    ''' <param name="mat"></param>
-    Public Shared Sub SetIdentifyMatrix(ByRef mat As DenseMatrix)
-        Dim n_dim = mat.RowCount
-        For i = 0 To n_dim - 1
-            For j = 0 To n_dim - 1
-                If i = j Then
-                    mat(i)(j) = 1.0
-                Else
-                    mat(i)(j) = 0
-                End If
-            Next
-        Next
-    End Sub
+    ''' <param name="trueValue"></param>
+    ''' <param name="targetValue"></param>
+    ''' <returns></returns>
+    Public Shared Function RelativeError(ByVal trueValue As Double, ByVal targetValue As Double) As Double
+        If SimpleLinearAlgebra.MathUtil.IsCloseToValues(trueValue, targetValue) Then
+            Return 0
+        Else
+            '分母が0の場合はNaN
+            Return Math.Abs(targetValue - trueValue) / targetValue
+        End If
+    End Function
 End Class
